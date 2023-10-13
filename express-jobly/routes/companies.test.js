@@ -95,6 +95,46 @@ describe("GET /companies", function () {
           ],
     });
   });
+  
+  test("filtering works ", async() =>{
+    const response = await request(app)
+    .get("/companies")
+    .query(({minEmployees: 3}));
+    expect(response.body).toEqual({
+      companies: [
+        {
+          handle: "c3",
+          name: "C3",
+          description: "Desc3",
+          numEmployees: 3,
+          logoUrl: "http://c3.img",
+        },
+      ],
+    });
+  });
+
+  test("filtering works on all fliters", async() =>{
+    const resp = await request(app)
+    .get("/companies")
+    .query({minEmployees: 2, maxEmployees: 3, name:"3"});
+    expect(resp.body).toEqual({
+      companies: [
+        {
+          handle: "c3",
+          name: "C3",
+          description: "Desc3",
+          numEmployees: 3,
+          logoUrl: "http://c3.img",
+        },
+      ],
+    });
+  });
+  test("bad request invalid fliter key", async() => {
+    const r = await request(app)
+    .get("/companies")
+    .query({ minEmployees: 2, nope: "dont think so"});
+    expect(r.statusCode).toEqual(400);
+  });
 
   test("fails: test next() handler", async function () {
     // there's no normal failure event which will cause this route to fail ---
