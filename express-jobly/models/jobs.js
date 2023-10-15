@@ -14,7 +14,7 @@ class Job {
                 salary,
                 equity,
                 compant_handle) VALUES ($1, $2, $3, $4)
-                RETURNING id, title, salary, equity, company_handle AS "companyHandle`,
+                RETURNING id, title, salary, equity, company_handle AS "compHandle`,
                 [
                     data.title, data.salary, data.equity, data.companyHandle,
 
@@ -26,7 +26,7 @@ class Job {
 
     // find all jobs and filters for searchFilters
 
-    static async findALL( {minSalary, hasEquity, title} = {}){
+    static async findAll( {minSalary, hasEquity, title} = {}){
         let query = `SELECT 
         j.id,
         j.title,
@@ -36,15 +36,15 @@ class Job {
         c.name AS "compName"
         FROM jobs j LEFT JOIN companies AS c ON c.handle = j.company_handle`;
     
-    let whereExpressions = {};
-    let queryValues = {};
+    let whereExpressions = [];
+    let queryValues = [];
     
   /// add each serch term to whereExpressions
   /// queryValues to generate right sql
 
   if (minSalary !== undefined){
     queryValues.push(minSalary);
-    whereExpressions.push(`salary >=$${queryValues.length}`);
+    whereExpressions.push(`salary >= $${queryValues.length}`);
 
   }
 
@@ -58,7 +58,7 @@ class Job {
   } 
 
   if (whereExpressions.length > 0){
-    query += " WHERE" + whereExpressions.join(" AND")
+    query += " WHERE " + whereExpressions.join(" AND")
   }
    // Finalize query and return results
 
@@ -78,7 +78,7 @@ static async get(id){
  title,
  salary,
  equity,
- company_handle AS "compHandle
+ company_handle AS "compHandle"
  FROM jobs 
  WHERE id = $1`,[id]);
 
