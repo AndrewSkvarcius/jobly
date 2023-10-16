@@ -140,6 +140,33 @@ static async remove(id){
 
     if (!job) throw new NotFoundError(`${id} job not found`);
 }
+
+static async applyForJob(username, jobId){
+    
+        const jobCheck = await db.query(
+            `SELECT id
+           FROM jobs
+           WHERE id = $1`, [jobId]);
+
+           const job = jobCheck.rows[0];
+
+           if(!job) throw new NotFoundError(`no such job ${jobId}`)
+    
+           const userCheck = await db.query(
+            `SELECT username
+               FROM users
+               WHERE id = $1`, [jobId]);
+    
+               const user = userCheck.rows[0];
+    
+               if(!user) throw new NotFoundError(`no such user ${username}`)
+
+               await db.query(
+                `INSERT INTO applications (job_id, username)
+                VALUES ($1, $2)`,
+                [jobId, username]);
+
+        }
 }
 
 module.exports = Job;

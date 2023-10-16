@@ -119,5 +119,19 @@ router.delete("/:username", checkCorrectUserOrAdmin, async function (req, res, n
   }
 });
 
+/// POST User id job application
+// returns {'applied': jobId}
+// middleware auth CheckCorrectUserorAdmin
+
+router.post("/:username/jobs/:id", checkCorrectUserOrAdmin, async (req, res, next) => {
+  try{
+const jobId = +req.params.id;
+await User.applyForJob(req.params.username, jobId);
+return res.json({ applied: jobId});
+  }
+  catch(e){
+    return next(e);
+  }
+})
 
 module.exports = router;
